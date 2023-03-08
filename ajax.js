@@ -1,31 +1,37 @@
 function download_image() {
-    var username = document.getElementById('username').value;
-    var url = "https://instagram.com/" + username + "?__a=1";
+    var url = "https://instagram-api-media-downloader.p.rapidapi.com/ig/userInfoByUsername/" + document.getElementById('username').value + "";
 
     $("#download").html('Loading');
 
     $.ajax({
-        url: "https://api.allorigins.win/get?url=" + encodeURIComponent(url) + "&callback=?",
+        url: url,
         type: 'get',
-        dataType: 'jsonp',
+        headers: {
+            "X-RapidAPI-Key": "8d9ae15bc4msh96b4693811332b1p166c78jsn2d6c057583ec",
+            "X-RapidAPI-Host": "instagram-api-media-downloader.p.rapidapi.com"
+        },
         success: function (response) {
-            var data = JSON.parse(response.contents);
-            if (data.graphql && data.graphql.user) {
-                var profile = data.graphql.user.profile_pic_url_hd;
+            var profile = response.result.user.profile_pic_url;
 
-                $("#image").attr("src", profile);
-                document.getElementById("image").style.display = "block";
-                $("#download").html('View');
-            } else {
-                alert("User Not Found");
-                $("#download").html('View');
-                document.getElementById("image").style.display = "none";
-            }
+            // Set the image source and make it visible
+            $("#image").attr("src", profile);
+            $("#image").css("display", "block");
+
+            // Change the button text
+            $("#download").html('View');
+
+            // Reset the input field
+            $("#username").val("");
         },
         error: function (error) {
-            alert("Error fetching data");
+            alert("User Not Found");
+
+            // Hide the image and change the button text
+            $("#image").css("display", "none");
             $("#download").html('View');
-            document.getElementById("image").style.display = "none";
+
+            // Reset the input field
+            $("#username").val("");
         }
 
     });
